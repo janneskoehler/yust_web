@@ -48,7 +48,11 @@ class YustService {
     await fireAuth.signOut();
   }
 
-  T initDoc<T extends YustDoc>(YustDocSetup modelSetup, T doc) {
+  T initDoc<T extends YustDoc>(YustDocSetup modelSetup, [T doc = null]) {
+    if (doc == null) {
+      doc = modelSetup.newDoc() as T;
+    }
+    doc.id = firestore.collection(modelSetup.collectionName).doc().id;
     doc.createdAt = DateTime.now().toIso8601String();
     if (modelSetup.forEnvironment) {
       doc.envId = Yust.store.currUser.currEnvId;
