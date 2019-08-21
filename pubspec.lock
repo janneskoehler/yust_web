@@ -22,13 +22,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.0"
-  boolean_selector:
-    dependency: transitive
-    description:
-      name: boolean_selector
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.4"
   build:
     dependency: transitive
     description:
@@ -92,13 +85,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.2"
-  cloud_firestore:
-    dependency: "direct main"
-    description:
-      name: cloud_firestore
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.12.7"
   code_builder:
     dependency: transitive
     description:
@@ -141,20 +127,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.7"
-  firebase_auth:
+  firebase:
     dependency: "direct main"
     description:
-      name: firebase_auth
+      name: firebase
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.11.1+9"
-  firebase_core:
-    dependency: "direct main"
-    description:
-      name: firebase_core
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.0+6"
+    version: "5.0.4"
   fixnum:
     dependency: transitive
     description:
@@ -162,15 +141,23 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.10.9"
-  flutter:
+  flutter_web:
     dependency: "direct main"
-    description: flutter
-    source: sdk
+    description:
+      path: "packages/flutter_web"
+      ref: HEAD
+      resolved-ref: "88a6325290b75326c072ae63bf3016e15a08fccc"
+      url: "https://github.com/flutter/flutter_web"
+    source: git
     version: "0.0.0"
-  flutter_test:
-    dependency: "direct dev"
-    description: flutter
-    source: sdk
+  flutter_web_ui:
+    dependency: "direct main"
+    description:
+      path: "packages/flutter_web_ui"
+      ref: HEAD
+      resolved-ref: "88a6325290b75326c072ae63bf3016e15a08fccc"
+      url: "https://github.com/flutter/flutter_web"
+    source: git
     version: "0.0.0"
   front_end:
     dependency: transitive
@@ -347,13 +334,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.3"
-  scoped_model:
-    dependency: "direct main"
-    description:
-      name: scoped_model
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   shelf:
     dependency: transitive
     description:
@@ -368,11 +348,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.3"
-  sky_engine:
-    dependency: transitive
-    description: flutter
-    source: sdk
-    version: "0.0.99"
   source_gen:
     dependency: transitive
     description:
@@ -422,13 +397,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-  test_api:
-    dependency: transitive
-    description:
-      name: test_api
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.5"
   timing:
     dependency: transitive
     description:
@@ -473,4 +441,3 @@ packages:
     version: "2.1.16"
 sdks:
   dart: ">=2.3.0-dev.0.1 <3.0.0"
-  flutter: ">=1.5.0 <2.0.0"

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_web/material.dart';
 
 typedef StringCallback = void Function(String);
 
@@ -45,7 +45,7 @@ class _YustTextFieldState extends State<YustTextField> {
         contentPadding: const EdgeInsets.all(20.0)
       ),
       maxLines: null,
-      minLines: widget.minLines,
+      // minLines: widget.minLines, // not supported
       controller: _controller,
       onChanged: (value) {
         widget.onChanged(value);

@@ -1,6 +1,6 @@
 library yust;
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase/firebase.dart' as fb;
 
 import 'models/yust_user.dart';
 import 'yust_service.dart';
@@ -13,7 +13,7 @@ class Yust {
 
   static void initialize() {
     Yust.store.authState = AuthState.waiting;
-    FirebaseAuth.instance.onAuthStateChanged.asyncMap<YustUser>((fireUser) {
+    fb.auth().onAuthStateChanged.asyncMap<YustUser>((fireUser) {
       return Future<YustUser>(() async {
         if (fireUser == null) {
           return null;

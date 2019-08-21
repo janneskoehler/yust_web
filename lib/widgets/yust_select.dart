@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_web/material.dart';
 
 class YustSelect<T> extends StatelessWidget {
   const YustSelect({Key key, this.label, this.value, this.optionValues, this.optionLabels, this.onSelected}) : super(key: key);

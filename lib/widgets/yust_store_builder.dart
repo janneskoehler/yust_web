@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
+import 'package:flutter_web/material.dart';
+// import 'package:scoped_model/scoped_model.dart';
 
 import '../yust.dart';
 import '../yust_store.dart';
@@ -12,12 +12,13 @@ class YustStoreBuilder extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return ScopedModel<YustStore>(
-      model: Yust.store,
-      child: ScopedModelDescendant<YustStore>(
-        builder: builder,
-      ),
-    );
+    return SizedBox.shrink();
+    // return ScopedModel<YustStore>( // not supported
+    //   model: Yust.store,
+    //   child: ScopedModelDescendant<YustStore>(
+    //     builder: builder,
+    //   ),
+    // );
   }
 
 }

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:yust/widgets/yust_store_builder.dart';
+import 'package:flutter_web/material.dart';
+import 'package:yust_web/widgets/yust_store_builder.dart';
 
 import '../yust.dart';
 

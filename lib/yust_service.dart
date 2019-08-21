@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:firebase/firebase.dart' as fb;
+import 'package:firebase/firestore.dart';
+import 'package:flutter_web/material.dart';
 import 'package:intl/intl.dart';
 
 import 'models/yust_doc.dart';
@@ -12,7 +12,8 @@ import 'models/yust_user.dart';
 import 'yust.dart';
 
 class YustService {
-  final FirebaseAuth fireAuth = FirebaseAuth.instance;
+  final fireAuth = fb.auth();
+  final firestore = fb.firestore();
 
   Future<void> signIn(String email, String password) async {
     if (email == null || email == '') {
@@ -21,7 +22,7 @@ class YustService {
     if (password == null || password == '') {
       throw YustException('Das Passwort darf nicht leer sein.');
     }
-    await fireAuth.signInWithEmailAndPassword(email: email, password: password);
+    await fireAuth.signInWithEmailAndPassword(email, password);
   }
 
   Future<void> signUp(String firstName, String lastName, String email,
@@ -36,10 +37,10 @@ class YustService {
       throw YustException('Die Passwörter stimmen nicht überein.');
     }
     final fireUser = await fireAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
+        email, password);
     final user =
         YustUser(email: email, firstName: firstName, lastName: lastName)
-          ..id = fireUser.uid;
+          ..id = fireUser.user.uid;
     await Yust.service.saveDoc<YustUser>(YustUser.setup, user);
   }
 
@@ -63,68 +64,69 @@ class YustService {
 
   Stream<List<T>> getDocs<T extends YustDoc>(YustDocSetup modelSetup,
       {List<List<dynamic>> filterList, List<String> orderByList}) {
-    Query query = Firestore.instance.collection(modelSetup.collectionName);
-    if (modelSetup.forEnvironment) {
-      query = query.where('envId', isEqualTo: Yust.store.currUser.currEnvId);
-    }
-    if (modelSetup.forUser) {
-      query = query.where('userId', isEqualTo: Yust.store.currUser.id);
-    }
-    query = _executeFilterList(query, filterList);
-    query = _executeOrderByList(query, orderByList);
-    return query.snapshots().map((snapshot) {
-      // print('Get docs: ${modelSetup.collectionName}');
-      return snapshot.documents.map((docSnapshot) {
-        final doc = modelSetup.fromJson(docSnapshot.data) as T;
+    CollectionReference query =
+          firestore.collection(modelSetup.collectionName);
+      if (modelSetup.forEnvironment) {
+        query = query.where('envId', '==', Yust.store.currUser.currEnvId);
+      }
+      if (modelSetup.forUser) {
+        query = query.where('userId', '==', Yust.store.currUser.id);
+      }
+      query = _executeFilterList(query, filterList);
+      query = _executeOrderByList(query, orderByList);
+      return query.onSnapshot.map((snapshot) {
+        // print('Get docs: ${modelSetup.collectionName}');
+        return snapshot.docs.map((docSnapshot) {
+          final doc = modelSetup.fromJson(docSnapshot.data()) as T;
+          if (modelSetup.onMigrate != null) {
+            modelSetup.onMigrate(doc);
+          }
+          return doc;
+        }).toList();
+      });
+  }
+
+  Stream<T> getDoc<T extends YustDoc>(YustDocSetup modelSetup, String id) {
+    return firestore
+          .collection(modelSetup.collectionName)
+          .doc(id)
+          .onSnapshot
+          .map((snapshot) {
+        // print('Get doc: ${modelSetup.collectionName} $id');
+        final doc = modelSetup.fromJson(snapshot.data()) as T;
         if (modelSetup.onMigrate != null) {
           modelSetup.onMigrate(doc);
         }
         return doc;
-      }).toList();
-    });
-  }
-
-  Stream<T> getDoc<T extends YustDoc>(YustDocSetup modelSetup, String id) {
-    return Firestore.instance
-        .collection(modelSetup.collectionName)
-        .document(id)
-        .snapshots()
-        .map((snapshot) {
-      // print('Get doc: ${modelSetup.collectionName} $id');
-      final doc = modelSetup.fromJson(snapshot.data) as T;
-      if (modelSetup.onMigrate != null) {
-        modelSetup.onMigrate(doc);
-      }
-      return doc;
-    });
+      });
   }
 
   Stream<T> getFirstDoc<T extends YustDoc>(
       YustDocSetup modelSetup, List<List<dynamic>> filterList) {
-    Query query = Firestore.instance.collection(modelSetup.collectionName);
-    if (modelSetup.forEnvironment) {
-      query = query.where('envId', isEqualTo: Yust.store.currUser.currEnvId);
-    }
-    if (modelSetup.forUser) {
-      query = query.where('userId', isEqualTo: Yust.store.currUser.id);
-    }
-    query = _executeFilterList(query, filterList);
-    return query.snapshots().map<T>((snapshot) {
-      if (snapshot.documents.length > 0) {
-        final doc = modelSetup.fromJson(snapshot.documents[0].data) as T;
-        if (modelSetup.onMigrate != null) {
-          modelSetup.onMigrate(doc);
-        }
-        return doc;
-      } else {
-        return null;
+    var query = firestore.collection(modelSetup.collectionName);
+      if (modelSetup.forEnvironment) {
+        query = query.where('envId', '==', Yust.store.currUser.currEnvId);
       }
-    });
+      if (modelSetup.forUser) {
+        query = query.where('userId', '==', Yust.store.currUser.id);
+      }
+      query = _executeFilterList(query, filterList);
+      return query.onSnapshot.map<T>((snapshot) {
+        if (snapshot.docs.length > 0) {
+          final doc = modelSetup.fromJson(snapshot.docs[0].data()) as T;
+          if (modelSetup.onMigrate != null) {
+            modelSetup.onMigrate(doc);
+          }
+          return doc;
+        } else {
+          return null;
+        }
+      });
   }
 
   Future<void> saveDoc<T extends YustDoc>(
       YustDocSetup modelSetup, T doc) async {
-    var collection = Firestore.instance.collection(modelSetup.collectionName);
+    var collection = firestore.collection(modelSetup.collectionName);
     if (doc.createdAt == null) {
       doc.createdAt = DateTime.now().toIso8601String();
     }
@@ -136,20 +138,19 @@ class YustService {
     }
 
     if (doc.id != null) {
-      await collection.document(doc.id).setData(doc.toJson());
+      await collection.doc(doc.id).set(doc.toJson());
     } else {
       var ref = await collection.add(doc.toJson());
-      doc.id = ref.documentID;
-      await ref.setData(doc.toJson());
+      doc.id = ref.id;
+      await ref.set(doc.toJson());
     }
   }
 
   Future<void> deleteDoc<T extends YustDoc>(
       YustDocSetup modelSetup, T doc) async {
-    var docRef = Firestore.instance
-        .collection(modelSetup.collectionName)
-        .document(doc.id);
-    await docRef.delete();
+    var docRef =
+          firestore.collection(modelSetup.collectionName).doc(doc.id);
+      await docRef.delete();
   }
 
   void showAlert(BuildContext context, String title, String message) {
@@ -251,29 +252,7 @@ class YustService {
   Query _executeFilterList(Query query, List<List<dynamic>> filterList) {
     if (filterList != null) {
       for (var filter in filterList) {
-        switch (filter[1]) {
-          case '==':
-            query = query.where(filter[0], isEqualTo: filter[2]);
-            break;
-          case '<':
-            query = query.where(filter[0], isLessThan: filter[2]);
-            break;
-          case '<=':
-            query = query.where(filter[0], isLessThanOrEqualTo: filter[2]);
-            break;
-          case '>':
-            query = query.where(filter[0], isGreaterThan: filter[2]);
-            break;
-          case '>=':
-            query = query.where(filter[0], isGreaterThanOrEqualTo: filter[2]);
-            break;
-          case 'arrayContains':
-            query = query.where(filter[0], arrayContains: filter[2]);
-            break;
-          case 'isNull':
-            query = query.where(filter[0], isNull: filter[2]);
-            break;
-        }
+        query = query.where(filter[0], filter[1], filter[2]);
       }
     }
     return query;
@@ -283,9 +262,12 @@ class YustService {
     if (orderByList != null) {
       orderByList.asMap().forEach((index, orderBy) {
         if (orderBy != 'DESC') {
-          final desc = (index + 1 < orderByList.length &&
-              orderByList[index + 1] == 'DESC');
-          query = query.orderBy(orderBy, descending: desc);
+          var sorting = 'asc';
+          if (index + 1 < orderByList.length &&
+              orderByList[index + 1] == 'DESC') {
+            sorting = 'desc';
+          }
+          query = query.orderBy(orderBy, sorting);
         }
       });
     }
