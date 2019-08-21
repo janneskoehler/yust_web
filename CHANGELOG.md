@@ -11,3 +11,9 @@
 * Add random string generator
 * Add account screen
 * Improvements and hotfixes
+
+## 0.3.0 - 2019-08-21
+
+* Improve doc builder
+* Add order by to queries
+* Release yust_web
