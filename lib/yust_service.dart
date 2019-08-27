@@ -68,7 +68,7 @@ class YustService {
 
   Stream<List<T>> getDocs<T extends YustDoc>(YustDocSetup modelSetup,
       {List<List<dynamic>> filterList, List<String> orderByList}) {
-    CollectionReference query =
+    Query query =
           firestore.collection(modelSetup.collectionName);
       if (modelSetup.forEnvironment) {
         query = query.where('envId', '==', Yust.store.currUser.currEnvId);
