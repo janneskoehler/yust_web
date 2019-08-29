@@ -36,8 +36,8 @@ class YustService {
     if (password != passwordConfirmation) {
       throw YustException('Die Passwörter stimmen nicht überein.');
     }
-    final fireUser = await fireAuth.createUserWithEmailAndPassword(
-        email, password);
+    final fireUser =
+        await fireAuth.createUserWithEmailAndPassword(email, password);
     final user =
         YustUser(email: email, firstName: firstName, lastName: lastName)
           ..id = fireUser.user.uid;
@@ -67,65 +67,65 @@ class YustService {
   }
 
   Stream<List<T>> getDocs<T extends YustDoc>(YustDocSetup modelSetup,
-      {List<List<dynamic>> filterList, List<String> orderByList}) {
-    Query query =
-          firestore.collection(modelSetup.collectionName);
-      if (modelSetup.forEnvironment) {
-        query = query.where('envId', '==', Yust.store.currUser.currEnvId);
-      }
-      if (modelSetup.forUser) {
-        query = query.where('userId', '==', Yust.store.currUser.id);
-      }
-      query = _executeFilterList(query, filterList);
-      query = _executeOrderByList(query, orderByList);
-      return query.onSnapshot.map((snapshot) {
-        // print('Get docs: ${modelSetup.collectionName}');
-        return snapshot.docs.map((docSnapshot) {
-          final doc = modelSetup.fromJson(docSnapshot.data()) as T;
-          if (modelSetup.onMigrate != null) {
-            modelSetup.onMigrate(doc);
-          }
-          return doc;
-        }).toList();
-      });
-  }
-
-  Stream<T> getDoc<T extends YustDoc>(YustDocSetup modelSetup, String id) {
-    return firestore
-          .collection(modelSetup.collectionName)
-          .doc(id)
-          .onSnapshot
-          .map((snapshot) {
-        // print('Get doc: ${modelSetup.collectionName} $id');
-        final doc = modelSetup.fromJson(snapshot.data()) as T;
+      {List<List<dynamic>> filterList, List<String> orderByList, num limit}) {
+    Query query = firestore.collection(modelSetup.collectionName);
+    if (modelSetup.forEnvironment) {
+      query = query.where('envId', '==', Yust.store.currUser.currEnvId);
+    }
+    if (modelSetup.forUser) {
+      query = query.where('userId', '==', Yust.store.currUser.id);
+    }
+    query = _executeFilterList(query, filterList);
+    query = _executeOrderByList(query, orderByList);
+    query = query.limit(limit);
+    return query.onSnapshot.map((snapshot) {
+      // print('Get docs: ${modelSetup.collectionName}');
+      return snapshot.docs.map((docSnapshot) {
+        final doc = modelSetup.fromJson(docSnapshot.data()) as T;
         if (modelSetup.onMigrate != null) {
           modelSetup.onMigrate(doc);
         }
         return doc;
-      });
+      }).toList();
+    });
+  }
+
+  Stream<T> getDoc<T extends YustDoc>(YustDocSetup modelSetup, String id) {
+    return firestore
+        .collection(modelSetup.collectionName)
+        .doc(id)
+        .onSnapshot
+        .map((snapshot) {
+      // print('Get doc: ${modelSetup.collectionName} $id');
+      final doc = modelSetup.fromJson(snapshot.data()) as T;
+      if (modelSetup.onMigrate != null) {
+        modelSetup.onMigrate(doc);
+      }
+      return doc;
+    });
   }
 
   Stream<T> getFirstDoc<T extends YustDoc>(
       YustDocSetup modelSetup, List<List<dynamic>> filterList) {
     var query = firestore.collection(modelSetup.collectionName);
-      if (modelSetup.forEnvironment) {
-        query = query.where('envId', '==', Yust.store.currUser.currEnvId);
-      }
-      if (modelSetup.forUser) {
-        query = query.where('userId', '==', Yust.store.currUser.id);
-      }
-      query = _executeFilterList(query, filterList);
-      return query.onSnapshot.map<T>((snapshot) {
-        if (snapshot.docs.length > 0) {
-          final doc = modelSetup.fromJson(snapshot.docs[0].data()) as T;
-          if (modelSetup.onMigrate != null) {
-            modelSetup.onMigrate(doc);
-          }
-          return doc;
-        } else {
-          return null;
+    if (modelSetup.forEnvironment) {
+      query = query.where('envId', '==', Yust.store.currUser.currEnvId);
+    }
+    if (modelSetup.forUser) {
+      query = query.where('userId', '==', Yust.store.currUser.id);
+    }
+    query = _executeFilterList(query, filterList);
+    return query.onSnapshot.map<T>((snapshot) {
+      if (snapshot.docs.length > 0) {
+        final doc = modelSetup.fromJson(snapshot.docs[0].data()) as T;
+        if (modelSetup.onMigrate != null) {
+          modelSetup.onMigrate(doc);
         }
-      });
+        return doc;
+      } else {
+        return null;
+      }
+    });
   }
 
   Future<void> saveDoc<T extends YustDoc>(
@@ -152,9 +152,8 @@ class YustService {
 
   Future<void> deleteDoc<T extends YustDoc>(
       YustDocSetup modelSetup, T doc) async {
-    var docRef =
-          firestore.collection(modelSetup.collectionName).doc(doc.id);
-      await docRef.delete();
+    var docRef = firestore.collection(modelSetup.collectionName).doc(doc.id);
+    await docRef.delete();
   }
 
   void showAlert(BuildContext context, String title, String message) {
