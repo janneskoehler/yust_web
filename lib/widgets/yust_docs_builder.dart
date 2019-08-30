@@ -11,25 +11,25 @@ class YustDocsBuilder<T extends YustDoc> extends StatelessWidget {
   final bool doNotWait;
   final Widget Function(List<T>) builder;
   final num limit;
-  final List startAfter;
 
-  YustDocsBuilder(
-      {@required this.modelSetup,
-      this.filter,
-      this.orderBy,
-      this.doNotWait = false,
-      @required this.builder,
-      this.limit,
-      this.startAfter});
+  YustDocsBuilder({
+    @required this.modelSetup,
+    this.filter,
+    this.orderBy,
+    this.doNotWait = false,
+    @required this.builder,
+    this.limit,
+  });
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<T>>(
-      stream: Yust.service.getDocs<T>(modelSetup,
-          filterList: filter,
-          orderByList: orderBy,
-          limit: limit,
-          startAfter: startAfter),
+      stream: Yust.service.getDocs<T>(
+        modelSetup,
+        filterList: filter,
+        orderByList: orderBy,
+        limit: limit,
+      ),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           throw snapshot.error;
