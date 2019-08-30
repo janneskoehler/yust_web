@@ -77,7 +77,9 @@ class YustService {
     }
     query = _executeFilterList(query, filterList);
     query = _executeOrderByList(query, orderByList);
-    query = query.limit(limit);
+    if (limit != null) {
+      query = query.limit(limit);
+    }
     return query.onSnapshot.map((snapshot) {
       // print('Get docs: ${modelSetup.collectionName}');
       return snapshot.docs.map((docSnapshot) {
