@@ -70,7 +70,7 @@ class YustService {
       {List<List<dynamic>> filterList,
       List<String> orderByList,
       num limit,
-      String startAfterId}) {
+      List startAfter}) {
     Query query = firestore.collection(modelSetup.collectionName);
     if (modelSetup.forEnvironment) {
       query = query.where('envId', '==', Yust.store.currUser.currEnvId);
@@ -79,11 +79,12 @@ class YustService {
       query = query.where('userId', '==', Yust.store.currUser.id);
     }
     query = _executeFilterList(query, filterList);
-    if (startAfterId != null) {
-      query = query.orderBy("id");
-      query = query.startAfter(fieldValues: [startAfterId]);
-    }
+
     query = _executeOrderByList(query, orderByList);
+
+    if (startAfter != null) {
+      query = query.startAfter(fieldValues: startAfter);
+    }
 
     if (limit != null) {
       query = query.limit(limit);

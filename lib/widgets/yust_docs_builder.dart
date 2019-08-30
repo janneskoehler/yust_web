@@ -11,7 +11,7 @@ class YustDocsBuilder<T extends YustDoc> extends StatelessWidget {
   final bool doNotWait;
   final Widget Function(List<T>) builder;
   final num limit;
-  final String startAfterId;
+  final List startAfter;
 
   YustDocsBuilder(
       {@required this.modelSetup,
@@ -20,7 +20,7 @@ class YustDocsBuilder<T extends YustDoc> extends StatelessWidget {
       this.doNotWait = false,
       @required this.builder,
       this.limit,
-      this.startAfterId});
+      this.startAfter});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class YustDocsBuilder<T extends YustDoc> extends StatelessWidget {
           filterList: filter,
           orderByList: orderBy,
           limit: limit,
-          startAfterId: startAfterId),
+          startAfter: startAfter),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           throw snapshot.error;
