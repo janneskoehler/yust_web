@@ -11,6 +11,7 @@ class YustDocsBuilder<T extends YustDoc> extends StatelessWidget {
   final bool doNotWait;
   final Widget Function(List<T>) builder;
   final num limit;
+  final String startAfterId;
 
   YustDocsBuilder(
       {@required this.modelSetup,
@@ -18,13 +19,17 @@ class YustDocsBuilder<T extends YustDoc> extends StatelessWidget {
       this.orderBy,
       this.doNotWait = false,
       @required this.builder,
-      this.limit});
+      this.limit,
+      this.startAfterId});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<T>>(
       stream: Yust.service.getDocs<T>(modelSetup,
-          filterList: filter, orderByList: orderBy, limit: limit),
+          filterList: filter,
+          orderByList: orderBy,
+          limit: limit,
+          startAfterId: startAfterId),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           throw snapshot.error;

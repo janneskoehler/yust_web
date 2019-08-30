@@ -67,7 +67,10 @@ class YustService {
   }
 
   Stream<List<T>> getDocs<T extends YustDoc>(YustDocSetup modelSetup,
-      {List<List<dynamic>> filterList, List<String> orderByList, num limit}) {
+      {List<List<dynamic>> filterList,
+      List<String> orderByList,
+      num limit,
+      String startAfterId}) {
     Query query = firestore.collection(modelSetup.collectionName);
     if (modelSetup.forEnvironment) {
       query = query.where('envId', '==', Yust.store.currUser.currEnvId);
@@ -76,7 +79,12 @@ class YustService {
       query = query.where('userId', '==', Yust.store.currUser.id);
     }
     query = _executeFilterList(query, filterList);
+    if (startAfterId != null) {
+      query.orderBy("id");
+      query.startAfter(fieldValues: [startAfterId]);
+    }
     query = _executeOrderByList(query, orderByList);
+
     if (limit != null) {
       query = query.limit(limit);
     }
