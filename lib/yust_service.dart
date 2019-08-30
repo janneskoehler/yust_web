@@ -80,8 +80,8 @@ class YustService {
     }
     query = _executeFilterList(query, filterList);
     if (startAfterId != null) {
-      query.orderBy("id");
-      query.startAfter(fieldValues: [startAfterId]);
+      query = query.orderBy("id");
+      query = query.startAfter(fieldValues: [startAfterId]);
     }
     query = _executeOrderByList(query, orderByList);
 
