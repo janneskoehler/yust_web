@@ -1,10 +1,11 @@
-import 'package:flutter_web/material.dart';
+import 'package:flutter/material.dart';
 
 typedef StringCallback = void Function(String);
 
 class YustTextField extends StatefulWidget {
-
-  YustTextField({Key key, this.label, this.value = '', this.onChanged, this.minLines}): super(key: key);
+  YustTextField(
+      {Key key, this.label, this.value = '', this.onChanged, this.minLines})
+      : super(key: key);
 
   final String label;
   final String value;
@@ -16,7 +17,6 @@ class YustTextField extends StatefulWidget {
 }
 
 class _YustTextFieldState extends State<YustTextField> {
-
   FocusNode _focusNode;
   TextEditingController _controller;
 
@@ -33,7 +33,7 @@ class _YustTextFieldState extends State<YustTextField> {
 
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     if (_controller.text != widget.value) {
@@ -41,9 +41,7 @@ class _YustTextFieldState extends State<YustTextField> {
     }
     return TextField(
       decoration: InputDecoration(
-        labelText: widget.label,
-        contentPadding: const EdgeInsets.all(20.0)
-      ),
+          labelText: widget.label, contentPadding: const EdgeInsets.all(20.0)),
       maxLines: null,
       // minLines: widget.minLines, // not supported
       controller: _controller,

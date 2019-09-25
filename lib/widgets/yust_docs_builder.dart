@@ -1,4 +1,4 @@
-import 'package:flutter_web/material.dart';
+import 'package:flutter/material.dart';
 
 import '../models/yust_doc.dart';
 import '../models/yust_doc_setup.dart';

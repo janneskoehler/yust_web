@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:firebase/firebase.dart' as fb;
 import 'package:firebase/firestore.dart';
-import 'package:flutter_web/material.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'models/yust_doc.dart';

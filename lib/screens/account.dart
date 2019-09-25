@@ -1,53 +1,50 @@
-import 'package:flutter_web/material.dart';
+import 'package:flutter/material.dart';
 import 'package:yust_web/widgets/yust_store_builder.dart';
 
 import '../yust.dart';
 
 class AccountScreen extends StatelessWidget {
-  
   static String routeName = 'account';
-  
+
   @override
   Widget build(BuildContext context) {
     return YustStoreBuilder(
-      builder: (context, child, store) => Scaffold(
-        appBar: AppBar(title: Text('Account')),
-        body: ListView(
-          padding: const EdgeInsets.only(top: 20.0),
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: Column(
+        builder: (context, child, store) => Scaffold(
+              appBar: AppBar(title: Text('Account')),
+              body: ListView(
+                padding: const EdgeInsets.only(top: 20.0),
                 children: <Widget>[
-                  Icon(
-                    Icons.person,
-                    color: Theme.of(context).accentColor,
-                    size: 100.0,
+                  Container(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: Column(children: <Widget>[
+                      Icon(
+                        Icons.person,
+                        color: Theme.of(context).accentColor,
+                        size: 100.0,
+                      ),
+                      Text(
+                          store.currUser.firstName +
+                              ' ' +
+                              Yust.store.currUser.lastName,
+                          style: TextStyle(
+                              color: Theme.of(context).accentColor,
+                              fontSize: 20.0)),
+                    ]),
                   ),
-                  Text(
-                    store.currUser.firstName + ' ' + Yust.store.currUser.lastName,
-                    style: TextStyle(
-                      color: Theme.of(context).accentColor, 
-                      fontSize: 20.0
-                    )
+                  Divider(),
+                  ListTile(
+                    leading: Icon(Icons.power_settings_new,
+                        color: Theme.of(context).accentColor, size: 40.0),
+                    title: Text('Abmelden',
+                        style: TextStyle(color: Theme.of(context).accentColor)),
+                    onTap: () {
+                      Yust.service.signOut();
+                      Navigator.pop(context);
+                    },
                   ),
-                ]
+                  Divider(),
+                ],
               ),
-            ),
-            Divider(),
-            ListTile(
-              leading: Icon(Icons.power_settings_new, color: Theme.of(context).accentColor, size: 40.0),
-              title: Text('Abmelden', style: TextStyle(color: Theme.of(context).accentColor)),
-              onTap: () {
-                Yust.service.signOut();
-                Navigator.pop(context);
-              },
-            ),
-            Divider(),
-          ],
-        ),
-      )
-    );
+            ));
   }
-
 }
